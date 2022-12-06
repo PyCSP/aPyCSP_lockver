@@ -1,7 +1,7 @@
 """
 websockets based server/client
 https://github.com/aaugustin/websockets
-18:49:20-johnm@beast:~/ldocs/todo/podcasts\>apt-cache show python3-websocket python3-websockets
+18:49:20-johnm@beast:~/ldocs/todo/podcasts> apt-cache show python3-websocket python3-websockets
 Package: python3-websocket
 Architecture: all
 Version: 0.44.0-0ubuntu2

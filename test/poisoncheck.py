@@ -3,11 +3,12 @@
 # Copyright (c) 2018 John Markus Bjørndalen, jmb@cs.uit.no.
 # See LICENSE.txt for licensing details (MIT License).
 
-from common import *
-from apycsp import *
-from apycsp.plugNplay import *
+from common import handle_common_args
+from apycsp import process, One2OneChannel, BlackHoleChannel, run_CSP, poisonChannel, Any2OneChannel
+from apycsp.plugNplay import Identity
 
 handle_common_args()
+
 
 @process
 async def PoisonTest(cout):
@@ -15,6 +16,7 @@ async def PoisonTest(cout):
         print(i)
         await cout(i)
     await poisonChannel(cout)
+
 
 def test():
     a = One2OneChannel("a")
@@ -26,8 +28,9 @@ def test():
             Identity(a.read, b.write),
             Identity(b.read, c.write),
             Identity(c.read, d.write))
-    for ch in [a,b,c,d]:
+    for ch in [a, b, c, d]:
         print("State of channel", ch.name, "- poisoned is", ch.poisoned)
+
 
 @process
 async def PoisonReader(cin):
@@ -36,6 +39,7 @@ async def PoisonReader(cin):
         print(i, r)
     await cin.poison()
 
+
 @process
 async def Count(cout):
     i = 0
@@ -43,12 +47,14 @@ async def Count(cout):
         await cout(i)
         i += 1
 
+
 def test2():
     a = Any2OneChannel()
     run_CSP(Count(a.write),
             Count(a.write),
             PoisonReader(a.read))
     print("Processes done")
+
 
 if __name__ == "__main__":
     test()
