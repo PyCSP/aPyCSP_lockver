@@ -104,7 +104,7 @@ class Alternative(object):
         # First, enable guards.
         self.state = _ALT_ENABLING
         await self._enableGuards()
-        with await self._altMonitor:
+        async with self._altMonitor:
             if self.state == _ALT_ENABLING:
                 # No guard has been selected yet. Equivalent to self.selected == None.
                 # Wait for one of the guards to become "ready".

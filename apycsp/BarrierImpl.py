@@ -16,7 +16,7 @@ class Barrier(object):
         self.reset(nEnrolled)
 
     async def reset(self, nEnrolled):
-        with await self.lock:
+        async with self.lock:
             self.nEnrolled = nEnrolled
             self.countDown = nEnrolled
             if nEnrolled < 0:
@@ -24,7 +24,7 @@ class Barrier(object):
 
     async def sync(self):
         "Synchronize the invoking process on this barrier."
-        with await self.lock:
+        async with self.lock:
             self.countDown -= 1
             if self.countDown > 0:
                 await self.lock.wait()
@@ -33,12 +33,12 @@ class Barrier(object):
                 self.lock.notify_all()
 
     async def enroll(self):
-        with await self.lock:
+        async with self.lock:
             self.nEnrolled += 1
             self.countDown += 1
 
     async def resign(self):
-        with await self.lock:
+        async with self.lock:
             self.nEnrolled -= 1
             self.countDown -= 1
             if self.countDown == 0:

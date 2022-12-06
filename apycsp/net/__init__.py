@@ -183,7 +183,7 @@ def start_server(host_port="8890"):
         host = None
         port = int(host_port)
     loop = asyncio.get_event_loop()
-    serv = asyncio.start_server(_client_handler, host=host, port=port, loop=loop)
+    serv = asyncio.start_server(_client_handler, host=host, port=port)
     task = loop.create_task(serv)  # noqa : F401
     print("Running server")
     return serv
@@ -238,7 +238,7 @@ class _ClientConn():
 async def _setup_client(host_port='127.0.0.1:8890', loop=None):
     host, port = host_port.split(":")
     port = int(port)
-    reader, writer = await asyncio.open_connection(host, port, loop=loop)
+    reader, writer = await asyncio.open_connection(host, port)
     conn = _ClientConn(reader, writer, host_port, host, port)
     _clconn[host_port] = conn
     if 'def' not in _clconn:

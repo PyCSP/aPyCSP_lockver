@@ -29,7 +29,9 @@ def synchronized(func):
 
     @functools.wraps(func)
     async def s_wrap(self, *args, **kwargs):
-        with await self._cond:   # TODO: async with X is much slower than with await X
+        # "with await self._cond" is no longer allowed from Python 3.10.
+        # It used to be much faster than async with though.
+        async with self._cond:
             if is_coroutine:
                 return await func(self, *args, **kwargs)
             return func(self, *args, **kwargs)
@@ -301,7 +303,7 @@ class Any2OneChannel(One2OneChannel):
         self.writerLock = asyncio.Lock()
 
     async def _write(self, obj=None):
-        with await self.writerLock:  # ensure that only one writer attempts to write at any time
+        async with self.writerLock:  # ensure that only one writer attempts to write at any time
             return await super()._write(obj)
 
 
@@ -313,7 +315,7 @@ class One2AnyChannel(One2OneChannel):
         self.readerLock = asyncio.Lock()
 
     async def _read(self):
-        with await self.readerLock:  # ensure that only one reader attempts to read at any time
+        async with self.readerLock:  # ensure that only one reader attempts to read at any time
             return await super()._read()
 
 
@@ -323,7 +325,7 @@ class Any2AnyChannel(One2AnyChannel):
         self.writerLock = asyncio.Lock()
 
     async def _write(self, obj=None):
-        with await self.writerLock:  # ensure that only one writer attempts to write at any time
+        async with self.writerLock:  # ensure that only one writer attempts to write at any time
             return await super()._write(obj)
 
 
@@ -440,7 +442,7 @@ class BufferedAny2OneChannel(BufferedOne2OneChannel):
         self.writerLock = asyncio.Lock()
 
     async def _write(self, obj=None):
-        with await self.writerLock:  # ensure that only one writer attempts to write at any time
+        async with self.writerLock:  # ensure that only one writer attempts to write at any time
             return await super()._write(obj)
 
 
@@ -452,7 +454,7 @@ class BufferedOne2AnyChannel(BufferedOne2OneChannel):
         self.read  = ChannelInputEnd(self)  # make sure ALT is NOT supported
 
     async def _read(self):
-        with await self.readerLock:  # ensure that only one reader attempts to read at any time
+        async with self.readerLock:  # ensure that only one reader attempts to read at any time
             return await super()._read()
 
 
@@ -462,5 +464,5 @@ class BufferedAny2AnyChannel(BufferedOne2AnyChannel):
         self.writerLock = asyncio.Lock()
 
     async def _write(self, obj=None):
-        with await self.writerLock:  # ensure that only one writer attempts to write at any time
+        async with self.writerLock:  # ensure that only one writer attempts to write at any time
             return await super()._write(obj)
